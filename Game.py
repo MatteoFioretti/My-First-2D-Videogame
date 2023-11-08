@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from pygame.sprite import _Group
+
 
 class Player (pygame.sprite.Sprite):
     def __init__(self):
@@ -10,3 +10,11 @@ class Player (pygame.sprite.Sprite):
 class Enemy (pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+
+# Screen Setup
+screen_wdt = 800
+screen_hgt = 400
+screen = pygame.display.set_mode((screen_wdt,screen_hgt))
+
+while True:
+    continue
