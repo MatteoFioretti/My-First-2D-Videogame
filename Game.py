@@ -91,12 +91,15 @@ class Enemy (pygame.sprite.Sprite):
 
 pygame.init()
 
+game_active = False
+font = pygame.font.Font("Graphic/Font/Pixeltype.ttf")
+
 # Screen Setup
 screen_wdt = 800
 screen_hgt = 400
 screen = pygame.display.set_mode((screen_wdt,screen_hgt))
 pygame.display.set_caption("MyFirstGame")
-
+pygame.display.set_icon(pygame.image.load("Graphic/Player/player_stand.png").convert_alpha())
 
 # Clock Setup
 clock = pygame.time.Clock()
@@ -115,6 +118,16 @@ player = pygame.sprite.GroupSingle()
 player.add(Player())
 
 
+#title surface
+title_surf = font.render("Pixel runner",False,(111,196,169))
+title_surf_scaled = pygame.transform.scale(title_surf, (title_surf.get_width() * 5.5, title_surf.get_height() * 5.5)).convert_alpha()
+title_rect = title_surf_scaled.get_rect(center = (400,200))
+
+# start button
+start_button_surf = font.render("Press enter To St art",False,(0,0,0))
+start_button_surf_scaled = pygame.transform.scale(start_button_surf, (start_button_surf.get_width() * 3.5, start_button_surf.get_height() * 3.5)).convert_alpha()
+start_button_rect = start_button_surf_scaled.get_rect(midbottom = (400,screen_hgt-30))
+
 # Game
 while True:
 
@@ -124,21 +137,32 @@ while True:
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             pygame.quit()
             exit()
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_d:
-                player.sprite.walking_right = False
-            elif event.key == pygame.K_a:
-                player.sprite.walking_left = False
+        
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            game_active = True
+        
+        if game_active:
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_d:
+                    player.sprite.walking_right = False
+                elif event.key == pygame.K_a:
+                    player.sprite.walking_left = False
       
+    if game_active:
+        # blitted surfaces
+        screen.blit(sky_resized,sky_rect)
+        screen.blit(ground_resized,ground_rect)
+        
+        #player animations
+        player.draw(screen)
+        player.update()
     
-    # blitted surfaces
-    screen.blit(sky_resized,sky_rect)
-    screen.blit(ground_resized,ground_rect)
-    
-    #player animations
-    player.draw(screen)
-    player.update()
-    
+    if not game_active:
+        screen.fill((94,129,162))
+        screen.blit(title_surf_scaled,title_rect)
+        screen.blit(start_button_surf_scaled,start_button_rect)
+       
+        
     pygame.display.update()
     # 60 frames every iteration 
     clock.tick(60)
