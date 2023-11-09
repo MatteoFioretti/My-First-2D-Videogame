@@ -5,8 +5,12 @@ from sys import exit
 class Player (pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        
         self.walking_right = False        
         self.walking_left = False        
+        self.gravity = 0
+        self.jump_strength = -20
+        
         self.player_stand = pygame.image.load("Graphic/Player/player_stand.png").convert_alpha()
         player_walk_1 = pygame.image.load("Graphic/Player/player_walk_1.png").convert_alpha()
         player_walk_2 = pygame.image.load("Graphic/Player/player_walk_2.png").convert_alpha()
@@ -19,10 +23,9 @@ class Player (pygame.sprite.Sprite):
         self.jump = pygame.image.load("Graphic/Player/jump.png").convert_alpha()
         self.jump_flipped = pygame.transform.flip(self.jump, True,False)
         
+        # by default the player will stand
         self.image = self.player_stand
         self.rect = self.image.get_rect(midbottom = (50,330))
-        self.gravity = 0
-        self.jump_strength = -20
         
     def player_gravity(self):
         self.gravity += 1
@@ -37,13 +40,16 @@ class Player (pygame.sprite.Sprite):
 
     def player_move(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d] :
+        letter_D = keys[pygame.K_d]
+        letter_A = keys[pygame.K_a]
+        
+        if letter_D:
             self.walking_right = True
             self.rect.right += 3
             if self.rect.right >= screen_wdt:
                 self.rect.right = screen_wdt
             
-        if keys[pygame.K_a] :
+        if letter_A:
             self.walking_left = True
             self.rect.left -= 3
             if self.rect.left <= 0:
@@ -51,7 +57,10 @@ class Player (pygame.sprite.Sprite):
     
     def player_animations(self):
         if self.rect.bottom < 330:
-            self.image = self.jump
+            if self.walking_left:
+                self.image = self.jump_flipped
+            else: 
+                self.image = self.jump
         
         elif self.walking_right:   
             self.player_index += 0.1
@@ -120,7 +129,7 @@ while True:
                 player.sprite.walking_right = False
             elif event.key == pygame.K_a:
                 player.sprite.walking_left = False
-     
+      
     
     # blitted surfaces
     screen.blit(sky_resized,sky_rect)
