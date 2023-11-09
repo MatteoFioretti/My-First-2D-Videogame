@@ -37,13 +37,13 @@ class Player (pygame.sprite.Sprite):
 
     def player_move(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d] and self.rect.bottom == 330:
+        if keys[pygame.K_d] :
             self.walking_right = True
             self.rect.right += 3
             if self.rect.right >= screen_wdt:
                 self.rect.right = screen_wdt
             
-        if keys[pygame.K_a] and self.rect.bottom == 330:
+        if keys[pygame.K_a] :
             self.walking_left = True
             self.rect.left -= 3
             if self.rect.left <= 0:
@@ -52,9 +52,6 @@ class Player (pygame.sprite.Sprite):
     def player_animations(self):
         if self.rect.bottom < 330:
             self.image = self.jump
-        
-        elif self.rect.bottom < 330 and self.walking_left:
-            self.image = self.jump_flipped
         
         elif self.walking_right:   
             self.player_index += 0.1
@@ -73,8 +70,8 @@ class Player (pygame.sprite.Sprite):
         
 
     def update(self):
-        self.player_move()
         self.player_jump()
+        self.player_move()
         self.player_gravity()
         self.player_animations()
 
