@@ -13,6 +13,6 @@ GAME DESCRPITION
 
 - ENEMY 
     - Enemy kills the player if the right side of it collides with the enemy's left side
-    - Player kills the enemy if it jumps on them.
+    - Player kills the enemy if it jumps on it.
 
     
