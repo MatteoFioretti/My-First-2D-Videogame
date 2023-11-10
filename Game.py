@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from random import randint
 
 
 class Player (pygame.sprite.Sprite):
@@ -87,6 +88,31 @@ class Player (pygame.sprite.Sprite):
 class Enemy (pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        
+        enemy_walk_1 = pygame.image.load("Graphic/Enemy/snail1.png")
+        enemy_walk_2 = pygame.image.load("Graphic/Enemy/snail2.png")
+        self.enemy_walk = [enemy_walk_1,enemy_walk_2]
+        self.enemy_walk_index = 0
+
+        self.image = self.enemy_walk[self.enemy_walk_index]
+        self.rect = self.image.get_rect(midbottom = (randint(900,1100),330))
+    
+    def enemy_move(self):
+        self.rect.left -= 5
+        if self.rect.left <= 0:
+            self.kill()
+    
+    def animation(self):
+        self.enemy_walk_index += 0.06
+        if self.enemy_walk_index >= len(self.enemy_walk):
+            self.enemy_walk_index = 0
+        else:
+            self.image = self.enemy_walk[int(self.enemy_walk_index)]
+            
+    
+    def update(self):
+        self.enemy_move()    
+        self.animation()
 
 
 pygame.init()
@@ -117,6 +143,11 @@ ground_rect = ground_resized.get_rect(midbottom = (0,screen_hgt+30))
 player = pygame.sprite.GroupSingle()
 player.add(Player())
 
+# Enemy
+enemy = pygame.sprite.Group()
+# Enemy timer
+enemy_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(enemy_timer,1500)
 
 #title surface
 title_surf = font.render("Pixel runner",False,(111,196,169))
@@ -147,15 +178,23 @@ while True:
                     player.sprite.walking_right = False
                 elif event.key == pygame.K_a:
                     player.sprite.walking_left = False
+            
+            if event.type == enemy_timer:
+                enemy.add(Enemy())
       
     if game_active:
         # blitted surfaces
         screen.blit(sky_resized,sky_rect)
         screen.blit(ground_resized,ground_rect)
         
-        #player animations
+        # player character
         player.draw(screen)
         player.update()
+
+        # enemy character
+        enemy.draw(screen)
+        enemy.update()
+
     
     if not game_active:
         screen.fill((94,129,162))
