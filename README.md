@@ -4,3 +4,15 @@
 
 [def]: https://www.youtube.com/@ClearCode
 [def2]: https://youtu.be/AY9MnQ4x3zk?si=T36nZzjMB8mttbCd
+
+GAME DESCRPITION
+-  PLAYER
+    - right movement: "d"
+    - left movement : "a"
+    - jump: "space"
+
+- ENEMY 
+    - Enemy kills the player if the right side of it collides with the enemy's left side
+    - Player kills the enemy if it jumps on them.
+
+    
