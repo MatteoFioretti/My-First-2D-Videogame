@@ -136,12 +136,23 @@ def player_kill():
     for enemy in enemy_group.sprites():
         if player.sprite.rect.colliderect(enemy.rect) and player.sprite.rect.midbottom[1] < enemy.rect.midbottom[1]:
             enemy.kill()
+            return 1
+    return 0
 
+def score(kills):
+    score_surf = font.render(f"SCORE: {kills}",False,(0,0,0))
+    score_surf_scaled = pygame.transform.scale(score_surf,(score_surf.get_width() * 2, score_surf.get_height() * 2))
+    score_rect = score_surf.get_rect(center = (screen_wdt//2, 35))
+    screen.blit(score_surf_scaled,score_rect)
+
+    
 
 pygame.init()
 
 game_active = False
-font = pygame.font.Font("Graphic/Font/Pixeltype.ttf")
+kills = 0
+
+font = pygame.font.SysFont("lucidasansdemigrassettocorsivo", 10)
 
 # Screen Setup
 screen_wdt = 800
@@ -178,7 +189,7 @@ title_surf_scaled = pygame.transform.scale(title_surf, (title_surf.get_width() *
 title_rect = title_surf_scaled.get_rect(center = (400,200))
 
 # start button
-start_button_surf = font.render("Press enter To St art",False,(0,0,0))
+start_button_surf = font.render("Press enter To Start",False,(0,0,0))
 start_button_surf_scaled = pygame.transform.scale(start_button_surf, (start_button_surf.get_width() * 3.5, start_button_surf.get_height() * 3.5)).convert_alpha()
 start_button_rect = start_button_surf_scaled.get_rect(midbottom = (400,screen_hgt-30))
 
@@ -211,7 +222,6 @@ while True:
         # blitted surfaces
         screen.blit(sky_resized,sky_rect)
         screen.blit(ground_resized,ground_rect)
-        
         # player character
         player.draw(screen)
         player.update()
@@ -220,14 +230,22 @@ while True:
         enemy_group.draw(screen)
         enemy_group.update()
         
-        player_kill()
+        kills += player_kill()
+        score(kills)
         game_active = not game_over()
     
     if not game_active:
+        
         screen.fill((94,129,162))
-        screen.blit(title_surf_scaled,title_rect)
         screen.blit(start_button_surf_scaled,start_button_rect)
         player.sprite.reset()
+        if kills == 0:
+            screen.blit(title_surf_scaled,title_rect)
+        else:
+            score_surf = font.render(f"Points: {kills}",False,(0,0,0))
+            score_surf_scaled = pygame.transform.scale(score_surf, (score_surf.get_width()*5, score_surf.get_height()*5))
+            score_rect = score_surf_scaled.get_rect(center  = (screen_wdt//2,screen_hgt//2))
+            screen.blit(score_surf_scaled,score_rect)
         
         
     pygame.display.update()
