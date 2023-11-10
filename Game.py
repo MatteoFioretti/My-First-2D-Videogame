@@ -28,6 +28,18 @@ class Player (pygame.sprite.Sprite):
         self.image = self.player_stand
         self.rect = self.image.get_rect(midbottom = (50,330))
         
+    
+    def reset(self):
+        # Reset player attributes to initial values
+        self.rect.midbottom = (50, 330)
+        self.walking_right = False
+        self.walking_left = False
+        self.gravity = 0
+        self.jump_strength = -20
+        self.player_index = 0
+        self.image = self.player_stand
+
+    
     def player_gravity(self):
         self.gravity += 1
         self.rect.y += self.gravity
@@ -93,12 +105,12 @@ class Enemy (pygame.sprite.Sprite):
         enemy_walk_2 = pygame.image.load("Graphic/Enemy/snail2.png")
         self.enemy_walk = [enemy_walk_1,enemy_walk_2]
         self.enemy_walk_index = 0
-
+        
         self.image = self.enemy_walk[self.enemy_walk_index]
         self.rect = self.image.get_rect(midbottom = (randint(900,1100),330))
     
     def enemy_move(self):
-        self.rect.left -= 5
+        self.rect.left -= 6
         if self.rect.left <= 0:
             self.kill()
     
@@ -113,6 +125,17 @@ class Enemy (pygame.sprite.Sprite):
     def update(self):
         self.enemy_move()    
         self.animation()
+
+def game_over():
+    if pygame.sprite.spritecollide(player.sprite,enemy_group,False):
+        enemy_group.empty()
+        return True
+    return False    
+    
+def player_kill():
+    for enemy in enemy_group.sprites():
+        if player.sprite.rect.colliderect(enemy.rect) and player.sprite.rect.midbottom[1] < enemy.rect.midbottom[1]:
+            enemy.kill()
 
 
 pygame.init()
@@ -144,7 +167,7 @@ player = pygame.sprite.GroupSingle()
 player.add(Player())
 
 # Enemy
-enemy = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 # Enemy timer
 enemy_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(enemy_timer,1500)
@@ -169,8 +192,6 @@ while True:
             pygame.quit()
             exit()
         
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-            game_active = True
         
         if game_active:
             if event.type == pygame.KEYUP:
@@ -180,8 +201,12 @@ while True:
                     player.sprite.walking_left = False
             
             if event.type == enemy_timer:
-                enemy.add(Enemy())
+                enemy_group.add(Enemy())
       
+        else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                game_active = True
+        
     if game_active:
         # blitted surfaces
         screen.blit(sky_resized,sky_rect)
@@ -192,15 +217,18 @@ while True:
         player.update()
 
         # enemy character
-        enemy.draw(screen)
-        enemy.update()
-
+        enemy_group.draw(screen)
+        enemy_group.update()
+        
+        player_kill()
+        game_active = not game_over()
     
     if not game_active:
         screen.fill((94,129,162))
         screen.blit(title_surf_scaled,title_rect)
         screen.blit(start_button_surf_scaled,start_button_rect)
-       
+        player.sprite.reset()
+        
         
     pygame.display.update()
     # 60 frames every iteration 
