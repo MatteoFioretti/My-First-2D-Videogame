@@ -3,6 +3,20 @@ from sys import exit
 from random import randint
 
 
+class Sky(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.sky = pygame.image.load("Graphic/Background/sky.png").convert()
+        self.image = self.sky
+        self.rect = self.image.get_rect(topleft = (0,0))
+        
+class Ground(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.ground = pygame.image.load("Graphic/Background/ground.png")
+        self.image = self.ground
+        self.rect = self.image.get_rect(topleft = (0,300))
+        
 class Player (pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -26,12 +40,12 @@ class Player (pygame.sprite.Sprite):
         
         # by default the player will stand
         self.image = self.player_stand
-        self.rect = self.image.get_rect(midbottom = (50,330))
+        self.rect = self.image.get_rect(midbottom = (50,300))
         
     
     def reset(self):
         # Reset player attributes to initial values
-        self.rect.midbottom = (50, 330)
+        self.rect.midbottom = (50, 300)
         self.walking_right = False
         self.walking_left = False
         self.gravity = 0
@@ -43,12 +57,12 @@ class Player (pygame.sprite.Sprite):
     def player_gravity(self):
         self.gravity += 1
         self.rect.y += self.gravity
-        if self.rect.bottom >= 330:
-            self.rect.bottom = 330
+        if self.rect.bottom >= 300:
+            self.rect.bottom = 300
     
     def player_jump(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE] and self.rect.bottom == 330:
+        if keys[pygame.K_SPACE] and self.rect.bottom == 300:
             self.gravity = self.jump_strength
 
     def player_move(self):
@@ -69,7 +83,7 @@ class Player (pygame.sprite.Sprite):
                 self.rect.left = 0
     
     def player_animations(self):
-        if self.rect.bottom < 330:
+        if self.rect.bottom < 300:
             if self.walking_left:
                 self.image = self.jump_flipped
             else: 
@@ -107,7 +121,7 @@ class Enemy (pygame.sprite.Sprite):
         self.enemy_walk_index = 0
         
         self.image = self.enemy_walk[self.enemy_walk_index]
-        self.rect = self.image.get_rect(midbottom = (randint(900,1100),330))
+        self.rect = self.image.get_rect(midbottom = (randint(900,1100),300))
     
     def enemy_move(self):
         self.rect.left -= 6
@@ -164,14 +178,12 @@ pygame.display.set_icon(pygame.image.load("Graphic/Player/player_stand.png").con
 # Clock Setup
 clock = pygame.time.Clock()
 
-# Background surface setup
-sky = pygame.image.load("Graphic/Background/sky.png").convert()
-sky_resized = pygame.transform.scale(sky,(800,400))
-sky_rect = sky_resized.get_rect(topleft = (0,0))
+# Sky
+sky = pygame.sprite.GroupSingle()
+sky.add(Sky())
 
-ground = pygame.image.load("Graphic/Background/ground.png")
-ground_resized = pygame.transform.scale(ground,(1600,100))
-ground_rect = ground_resized.get_rect(midbottom = (0,screen_hgt+30))
+ground = pygame.sprite.GroupSingle()
+ground.add(Ground())
 
 # Player
 player = pygame.sprite.GroupSingle()
@@ -219,9 +231,10 @@ while True:
                 game_active = True
         
     if game_active:
-        # blitted surfaces
-        screen.blit(sky_resized,sky_rect)
-        screen.blit(ground_resized,ground_rect)
+        
+        sky.draw(screen)
+        ground.draw(screen)
+
         # player character
         player.draw(screen)
         player.update()
