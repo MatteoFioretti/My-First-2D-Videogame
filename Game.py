@@ -159,8 +159,6 @@ def score(kills):
     score_rect = score_surf.get_rect(center = (screen_wdt//2, 35))
     screen.blit(score_surf_scaled,score_rect)
 
-    
-
 pygame.init()
 
 game_active = False
